@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from collections import defaultdict
 from .util import subvals, toposort
 from .wrap_util import wraps
+import numpy as np
 
 def trace(start_node, fun, x):
     with trace_stack.new_trace() as t:
@@ -36,6 +37,9 @@ def primitive(f_raw):
     def f_wrapped(*args, **kwargs):
         boxed_args, trace, node_constructor = find_top_boxed_args(args)
         if boxed_args:
+            for a in args + tuple(kwargs.values()):
+                if isinstance(a, np.ndarray):
+                    a.setflags(write=False)
             argvals = subvals(args, [(argnum, box._value) for argnum, box in boxed_args])
             if f_wrapped in notrace_primitives[node_constructor]:
                 return f_wrapped(*argvals, **kwargs)
