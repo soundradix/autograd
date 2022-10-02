@@ -2,7 +2,7 @@ from itertools import count
 from functools import reduce
 from .tracer import trace, primitive, toposort, Node, Box, isbox, getval
 from .util import func, subval
-
+import traceback
 # -------------------- reverse mode --------------------
 
 def make_vjp(fun, x):
@@ -24,7 +24,7 @@ def backward_pass(g, end_node):
     return outgrad[0]
 
 class VJPNode(Node):
-    __slots__ = ['parents', 'vjp']
+    __slots__ = ['parents', 'vjp', 'trace_code']
     def __init__(self, value, fun, args, kwargs, parent_argnums, parents):
         self.parents = parents
         try:
@@ -34,6 +34,7 @@ class VJPNode(Node):
             raise NotImplementedError("VJP of {} wrt argnums {} not defined"
                                       .format(fun_name, parent_argnums))
         self.vjp = vjpmaker(parent_argnums, value, args, kwargs)
+        self.code_trace = traceback.extract_stack()
 
     def initialize_root(self):
         self.parents = []
