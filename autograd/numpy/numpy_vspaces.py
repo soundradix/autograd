@@ -1,5 +1,6 @@
 import numpy as np
 from autograd.extend import VSpace
+from autograd.builtins import NamedTupleVSpace
 
 class ArrayVSpace(VSpace):
     def __init__(self, value):
@@ -58,8 +59,22 @@ VSpace.register(np.ndarray,
                 if np.iscomplexobj(x)
                 else ArrayVSpace(x))
 
-for type_ in [float, np.float64, np.float32, np.float16]:
+for type_ in [float, np.longdouble, np.float64, np.float32, np.float16]:
     ArrayVSpace.register(type_)
 
-for type_ in [complex, np.complex64, np.complex128]:
+for type_ in [complex, np.clongdouble, np.complex64, np.complex128]:
     ComplexArrayVSpace.register(type_)
+
+
+if np.__version__ >= '1.25':
+    class EigResultVSpace(NamedTupleVSpace):     seq_type = np.linalg.linalg.EigResult
+    class EighResultVSpace(NamedTupleVSpace):    seq_type = np.linalg.linalg.EighResult
+    class QRResultVSpace(NamedTupleVSpace):      seq_type = np.linalg.linalg.QRResult
+    class SlogdetResultVSpace(NamedTupleVSpace): seq_type = np.linalg.linalg.SlogdetResult
+    class SVDResultVSpace(NamedTupleVSpace):     seq_type = np.linalg.linalg.SVDResult
+
+    EigResultVSpace.register(np.linalg.linalg.EigResult)
+    EighResultVSpace.register(np.linalg.linalg.EighResult)
+    QRResultVSpace.register(np.linalg.linalg.QRResult)
+    SlogdetResultVSpace.register(np.linalg.linalg.SlogdetResult)
+    SVDResultVSpace.register(np.linalg.linalg.SVDResult)

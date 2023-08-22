@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import numpy as np
 from autograd.extend import Box, primitive
+from autograd.builtins import SequenceBox
 from . import numpy_wrapper as anp
 
 Box.__array_priority__ = 90.0
@@ -48,8 +49,8 @@ class ArrayBox(Box):
     def __hash__(self): return id(self)
 
 ArrayBox.register(np.ndarray)
-for type_ in [float, np.float64, np.float32, np.float16,
-              complex, np.complex64, np.complex128]:
+for type_ in [float, np.longdouble, np.float64, np.float32, np.float16,
+              complex, np.clongdouble, np.complex64, np.complex128]:
     ArrayBox.register(type_)
 
 # These numpy.ndarray methods are just refs to an equivalent numpy function
@@ -64,3 +65,10 @@ for method_name in nondiff_methods + diff_methods:
 
 # Flatten has no function, only a method.
 setattr(ArrayBox, 'flatten', anp.__dict__['ravel'])
+
+if np.__version__ >= '1.25':
+    SequenceBox.register(np.linalg.linalg.EigResult)
+    SequenceBox.register(np.linalg.linalg.EighResult)
+    SequenceBox.register(np.linalg.linalg.QRResult)
+    SequenceBox.register(np.linalg.linalg.SlogdetResult)
+    SequenceBox.register(np.linalg.linalg.SVDResult)
