@@ -560,7 +560,6 @@ def grad_sort(ans, x, axis=-1, kind='quicksort', order=None):
     sort_perm = anp.argsort(x, axis, kind, order)
     return lambda g: unpermuter(g, sort_perm)
 defvjp(anp.sort, grad_sort)
-defvjp(anp.msort, grad_sort)  # Until multi-D is allowed, these are the same.
 
 def grad_partition(ans, x, kth, axis=-1, kind='introselect', order=None):
     #TODO: Cast input with np.asanyarray()
