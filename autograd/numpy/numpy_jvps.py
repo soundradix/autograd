@@ -210,6 +210,7 @@ def fwd_grad_sort(g, ans, x, axis=-1, kind='quicksort', order=None):
     sort_perm = anp.argsort(x, axis, kind, order)
     return g[sort_perm]
 defjvp(anp.sort, fwd_grad_sort)
+defjvp(anp.msort, lambda g, ans, x: fwd_grad_sort(g, ans, x, axis=0))
 
 def fwd_grad_partition(g, ans, x, kth, axis=-1, kind='introselect', order=None):
     partition_perm = anp.argpartition(x, kth, axis, kind, order)
