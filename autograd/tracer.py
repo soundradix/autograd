@@ -6,6 +6,7 @@ from .wrap_util import wraps
 import numpy as np
 
 
+
 def trace(start_node, fun, x):
     with trace_stack.new_trace() as t:
         start_box = new_box(x, t, start_node)
