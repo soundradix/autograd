@@ -411,6 +411,7 @@ def grad_transpose(ans, x, axes=None):
 
 
 defvjp(anp.transpose, grad_transpose)
+defvjp(anp.permute_dims, grad_transpose)
 
 
 def repeat_to_match_shape(g, shape, dtype, axis, keepdims):
@@ -428,6 +429,8 @@ def repeat_to_match_shape(g, shape, dtype, axis, keepdims):
 
 
 def grad_broadcast_to(ans, x, new_shape):
+    while len(x.shape) < len(new_shape):
+        x = x[None]
     old_shape = anp.shape(x)
     assert anp.shape(ans) == new_shape
     assert len(old_shape) == len(new_shape), "Can't handle extra leading dims"

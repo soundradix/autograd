@@ -45,6 +45,7 @@ def concatenate_args(axis, *args):
 
 
 concatenate = lambda arr_list, axis=0: concatenate_args(axis, *arr_list)
+concat = concatenate
 vstack = row_stack = lambda tup: concatenate([atleast_2d(_m) for _m in tup], axis=0)
 
 
