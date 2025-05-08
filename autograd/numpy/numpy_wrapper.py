@@ -10,6 +10,8 @@ if _np.lib.NumpyVersion(_np.__version__) >= "2.0.0":
 else:
     from numpy.core.einsumfunc import _parse_einsum_input
 
+numpy_version = _np.__version__
+
 notrace_functions = [_np.ndim, _np.shape, _np.iscomplexobj, _np.result_type]
 
 
@@ -77,7 +79,7 @@ def array(A, *args, **kwargs):
 def wrap_if_boxes_inside(raw_array, slow_op_name=None):
     if raw_array.dtype is _np.dtype("O"):
         if slow_op_name:
-            warnings.warn("{} is slow for array inputs. " "np.concatenate() is faster.".format(slow_op_name))
+            warnings.warn("{} is slow for array inputs. np.concatenate() is faster.".format(slow_op_name))
         return array_from_args((), {}, *raw_array.ravel()).reshape(raw_array.shape)
     else:
         return raw_array
