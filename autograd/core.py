@@ -7,6 +7,17 @@ from .util import func, subval
 # -------------------- reverse mode --------------------
 
 
+hooks = {}
+
+
+# Barebones utility for debugging intermediate backward pass gradient values
+# Example usage:
+# register_hook (ar, lambda g: print("ar grad is", g))
+def register_hook(maybe_box, f):
+    if node := getattr(maybe_box, "_node", None):
+        hooks[node] = f
+
+
 def make_vjp(fun, x):
     start_node = VJPNode.new_root()
     end_value, end_node = trace(start_node, fun, x)
@@ -26,6 +37,8 @@ def backward_pass(g, end_node):
     outgrads = {end_node: (g, False)}
     for node in toposort(end_node):
         outgrad = outgrads.pop(node)
+        if hook_f := hooks.get(node):
+            hook_f(outgrad[0])
         ingrads = node.vjp(outgrad[0])
         for parent, ingrad in zip(node.parents, ingrads):
             outgrads[parent] = add_outgrads(outgrads.get(parent), ingrad)
