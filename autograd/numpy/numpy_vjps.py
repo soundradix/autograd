@@ -155,9 +155,10 @@ defvjp(
 # ----- Simple grads -----
 
 defvjp(anp.negative, lambda ans, x: lambda g: -g)
-defvjp(anp.abs, lambda ans, x: lambda g: g * replace_zero(anp.conj(x), 0.0) / replace_zero(ans, 1.0))
+np_abs_vjp = lambda ans, x: lambda g: g * replace_zero(anp.conj(x), 0.0) / replace_zero(ans, 1.0)
+defvjp(anp.abs, np_abs_vjp)
+defvjp(anp.absolute, np_abs_vjp)
 defvjp(anp.fabs, lambda ans, x: lambda g: anp.sign(x) * g)  # fabs doesn't take complex numbers.
-defvjp(anp.absolute, lambda ans, x: lambda g: g * anp.conj(x) / ans)
 defvjp(anp.reciprocal, lambda ans, x: lambda g: -g / x**2)
 defvjp(anp.exp, lambda ans, x: lambda g: ans * g)
 defvjp(anp.exp2, lambda ans, x: lambda g: ans * anp.log(2) * g)
@@ -219,8 +220,9 @@ defvjp(anp.moveaxis, lambda ans, a, source, destination: lambda g: anp.moveaxis(
 defvjp(anp.real_if_close, lambda ans, x: lambda g: match_complex(x, g))
 defvjp(anp.real, lambda ans, x: lambda g: match_complex(x, g))
 defvjp(anp.imag, lambda ans, x: lambda g: match_complex(x, -1j * g))
-defvjp(anp.conj, lambda ans, x: lambda g: anp.conj(g))
-defvjp(anp.conjugate, lambda ans, x: lambda g: anp.conj(g))
+np_conj_vjp = lambda ans, x: lambda g: anp.conj(g)
+defvjp(anp.conj, np_conj_vjp)
+defvjp(anp.conjugate, np_conj_vjp)
 defvjp(anp.angle, lambda ans, x: lambda g: match_complex(x, g * anp.conj(x * 1j) / anp.abs(x) ** 2))
 defvjp(
     anp.where,
